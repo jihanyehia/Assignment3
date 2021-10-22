@@ -1,0 +1,476 @@
+Script started on 2021-10-21 23:23:10+00:00 [TERM="screen" TTY="/dev/pts/1" COLUMNS="80" LINES="23"]
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ mkdir CUSTOMERS
+yehia@f6linuxA9:~/assignment3$ mkdir PRODUCTS
+yehia@f6linuxA9:~/assignment3$ 
+
+1. For each of the 100+100 files you produced in assignment #2; normalize the helpfulness bydividing the helpful_votes by total_votes then find the median of normalized helpfulness scores in each file
+2. Then convert the helpfulness column in each file to binary 0 or 1 values: a helpfulness scorebecomes 0 if it is below the median, and 1 if it is over the median (for that particular file).
+3. Each result should be placed in a new file (don't modify the old files).
+yehia@f6linuxA9:~/assignment3$ cp ../assignment2/100_customer_ids.txt 100_customer_ids.txt
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ cp ../assignment2/100_product_ids.txt 100_product_ids.txt
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ for num in `tr -s " " < 100_customer_ids.txt | cut -d " " -f3`; do cat ../amazon_reviews_us_Books_v1_02.tsv | grep "$num" | cut -f 8,9,10 > CUSTOMERS/$num.txt ; done
+
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ for num in `tr -s " " < 100_product_ids.txt | cut -d " " -f3`; do cat ../amazon_reviews_us_Books_v1_02.tsv | grep "$num" | cut -f 8,9,10 > PRODUCTS/$num.txt ; done
+
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ cd CUSTOMERS/
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ for f in *.txt; do awk -v OFS='   ' '{$4 = ($3 != 0) ? sprintf("%.3f", $2 / $3) : "0"}1' $f | sort -n -k 4 > $f.sorted.txt ; done
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ for f in *.sorted.txt; do awk -v f=$f '{count[NR] = $4} END {(NR%2 ==1) ? median = count[(NR + 1) / 2] : median = (count[(NR / 2)] + count[(NR / 2) + 1]) / 2; print(f,median)}' $f >> medians.txt; done
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ for f in *.sorted.txt; do id=$(echo $f | cut -d '.' -f1); median=$(grep $f medians.txt | cut -d ' ' -f2) ; awk -v median=$median '{$2 = ($4 >=  median) ? "1" : "0"}1' $f >> $id.BINARY.txt ; done
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ ls
+20595117.BINARY.txt      50378566.txt.sorted.txt  52173832.txt
+20595117.txt             50389232.BINARY.txt      52173832.txt.sorted.txt
+20595117.txt.sorted.txt  50389232.txt             52223435.BINARY.txt
+30559999.BINARY.txt      50389232.txt.sorted.txt  52223435.txt
+30559999.txt             50592435.BINARY.txt      52223435.txt.sorted.txt
+30559999.txt.sorted.txt  50592435.txt             52254603.BINARY.txt
+35004134.BINARY.txt      50592435.txt.sorted.txt  52254603.txt
+35004134.txt             50608834.BINARY.txt      52254603.txt.sorted.txt
+35004134.txt.sorted.txt  50608834.txt             52266433.BINARY.txt
+35985708.BINARY.txt      50608834.txt.sorted.txt  52266433.txt
+35985708.txt             50652563.BINARY.txt      52266433.txt.sorted.txt
+35985708.txt.sorted.txt  50652563.txt             52447634.BINARY.txt
+36642996.BINARY.txt      50652563.txt.sorted.txt  52447634.txt
+36642996.txt             50702879.BINARY.txt      52447634.txt.sorted.txt
+36642996.txt.sorted.txt  50702879.txt             52476938.BINARY.txt
+38491967.BINARY.txt      50702879.txt.sorted.txt  52476938.txt
+38491967.txt             50732546.BINARY.txt      52476938.txt.sorted.txt
+38491967.txt.sorted.txt  50732546.txt             52496677.BINARY.txt
+38672733.BINARY.txt      50732546.txt.sorted.txt  52496677.txt
+38672733.txt             50736950.BINARY.txt      52496677.txt.sorted.txt
+38672733.txt.sorted.txt  50736950.txt             52500542.BINARY.txt
+39134375.BINARY.txt      50736950.txt.sorted.txt  52500542.txt
+39134375.txt             50761804.BINARY.txt      52500542.txt.sorted.txt
+39134375.txt.sorted.txt  50761804.txt             52517734.BINARY.txt
+39569598.BINARY.txt      50761804.txt.sorted.txt  52517734.txt
+39569598.txt             50774468.BINARY.txt      52517734.txt.sorted.txt
+39569598.txt.sorted.txt  50774468.txt             52564468.BINARY.txt
+41012519.BINARY.txt      50774468.txt.sorted.txt  52564468.txt
+41012519.txt             50776149.BINARY.txt      52564468.txt.sorted.txt
+41012519.txt.sorted.txt  50776149.txt             52615377.BINARY.txt
+42800127.BINARY.txt      50776149.txt.sorted.txt  52615377.txt
+42800127.txt             50881246.BINARY.txt      52615377.txt.sorted.txt
+42800127.txt.sorted.txt  50881246.txt             52697458.BINARY.txt
+43546353.BINARY.txt      50881246.txt.sorted.txt  52697458.txt
+43546353.txt             50895620.BINARY.txt      52697458.txt.sorted.txt
+43546353.txt.sorted.txt  50895620.txt             52706646.BINARY.txt
+45041039.BINARY.txt      50895620.txt.sorted.txt  52706646.txt
+45041039.txt             50913245.BINARY.txt      52706646.txt.sorted.txt
+45041039.txt.sorted.txt  50913245.txt             52753467.BINARY.txt
+45193257.BINARY.txt      50913245.txt.sorted.txt  52753467.txt
+45193257.txt             50941451.BINARY.txt      52753467.txt.sorted.txt
+45193257.txt.sorted.txt  50941451.txt             52774618.BINARY.txt
+45273033.BINARY.txt      50941451.txt.sorted.txt  52774618.txt
+45273033.txt             51010391.BINARY.txt      52774618.txt.sorted.txt
+45273033.txt.sorted.txt  51010391.txt             52793250.BINARY.txt
+45284807.BINARY.txt      51010391.txt.sorted.txt  52793250.txt
+45284807.txt             51065232.BINARY.txt      52793250.txt.sorted.txt
+45284807.txt.sorted.txt  51065232.txt             52797744.BINARY.txt
+46134316.BINARY.txt      51065232.txt.sorted.txt  52797744.txt
+46134316.txt             51110953.BINARY.txt      52797744.txt.sorted.txt
+46134316.txt.sorted.txt  51110953.txt             52830980.BINARY.txt
+46983871.BINARY.txt      51110953.txt.sorted.txt  52830980.txt
+46983871.txt             51142763.BINARY.txt      52830980.txt.sorted.txt
+46983871.txt.sorted.txt  51142763.txt             52845727.BINARY.txt
+49042814.BINARY.txt      51142763.txt.sorted.txt  52845727.txt
+49042814.txt             51145127.BINARY.txt      52845727.txt.sorted.txt
+49042814.txt.sorted.txt  51145127.txt             52894384.BINARY.txt
+49115690.BINARY.txt      51145127.txt.sorted.txt  52894384.txt
+49115690.txt             51147790.BINARY.txt      52894384.txt.sorted.txt
+49115690.txt.sorted.txt  51147790.txt             52938698.BINARY.txt
+49148452.BINARY.txt      51147790.txt.sorted.txt  52938698.txt
+49148452.txt             51199159.BINARY.txt      52938698.txt.sorted.txt
+49148452.txt.sorted.txt  51199159.txt             52947077.BINARY.txt
+49202417.BINARY.txt      51199159.txt.sorted.txt  52947077.txt
+49202417.txt             51210331.BINARY.txt      52947077.txt.sorted.txt
+49202417.txt.sorted.txt  51210331.txt             52966385.BINARY.txt
+49273674.BINARY.txt      51210331.txt.sorted.txt  52966385.txt
+49273674.txt             51243012.BINARY.txt      52966385.txt.sorted.txt
+49273674.txt.sorted.txt  51243012.txt             53008075.BINARY.txt
+49355567.BINARY.txt      51243012.txt.sorted.txt  53008075.txt
+49355567.txt             51247650.BINARY.txt      53008075.txt.sorted.txt
+49355567.txt.sorted.txt  51247650.txt             53009736.BINARY.txt
+49447323.BINARY.txt      51247650.txt.sorted.txt  53009736.txt
+49447323.txt             51325095.BINARY.txt      53009736.txt.sorted.txt
+49447323.txt.sorted.txt  51325095.txt             53016962.BINARY.txt
+49693975.BINARY.txt      51325095.txt.sorted.txt  53016962.txt
+49693975.txt             51379338.BINARY.txt      53016962.txt.sorted.txt
+49693975.txt.sorted.txt  51379338.txt             53037408.BINARY.txt
+49750558.BINARY.txt      51379338.txt.sorted.txt  53037408.txt
+49750558.txt             51809405.BINARY.txt      53037408.txt.sorted.txt
+49750558.txt.sorted.txt  51809405.txt             53047425.BINARY.txt
+49786731.BINARY.txt      51809405.txt.sorted.txt  53047425.txt
+49786731.txt             51915884.BINARY.txt      53047425.txt.sorted.txt
+49786731.txt.sorted.txt  51915884.txt             53052943.BINARY.txt
+49992211.BINARY.txt      51915884.txt.sorted.txt  53052943.txt
+49992211.txt             51917998.BINARY.txt      53052943.txt.sorted.txt
+49992211.txt.sorted.txt  51917998.txt             53071109.BINARY.txt
+50057481.BINARY.txt      51917998.txt.sorted.txt  53071109.txt
+50057481.txt             51934027.BINARY.txt      53071109.txt.sorted.txt
+50057481.txt.sorted.txt  51934027.txt             53072811.BINARY.txt
+50068216.BINARY.txt      51934027.txt.sorted.txt  53072811.txt
+50068216.txt             51987970.BINARY.txt      53072811.txt.sorted.txt
+50068216.txt.sorted.txt  51987970.txt             53082946.BINARY.txt
+50122160.BINARY.txt      51987970.txt.sorted.txt  53082946.txt
+50122160.txt             52008531.BINARY.txt      53082946.txt.sorted.txt
+50122160.txt.sorted.txt  52008531.txt             53084107.BINARY.txt
+50199793.BINARY.txt      52008531.txt.sorted.txt  53084107.txt
+50199793.txt             52012289.BINARY.txt      53084107.txt.sorted.txt
+50199793.txt.sorted.txt  52012289.txt             medians.txt
+50378566.BINARY.txt      52012289.txt.sorted.txt
+50378566.txt             52173832.BINARY.txt
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ head 52173832.BINARY.txt
+3 0 0 0
+3 0 1 0.000
+3 0 1 0.000
+4 0 0 0
+4 0 0 0
+4 0 0 0
+4 0 0 0
+4 0 1 0.000
+4 0 1 0.000
+4 0 1 0.000
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ cd ../PRODUCTS/
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ for f in *.txt; do awk -v OFS='   ' '{$4 = ($3 != 0) ? sprintf("%.3f", $2 / $3) : "0"}1' $f | sort -n -k 4 > $f.sorted.txt ; done
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ for f in *.sorted.txt; do awk -v f=$f '{count[NR] = $4} END {(NR%2 ==1) ? median = count[(NR + 1) / 2] : median = (count[(NR / 2)] + count[(NR / 2) + 1]) / 2; print(f,median)}' $f >> medians.txt; done
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ for f in *.sorted.txt; do id=$(echo $f | cut -d '.' -f1); median=$(grep $f medians.txt | cut -d ' ' -f2) ; awk -v median=$median '{$2 = ($4 >=  median) ? "1" : "0"}1' $f >> $id.BINARY.txt ; done
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ ls
+0060193395.BINARY.txt      038529929X.txt.sorted.txt  0553272535.txt
+0060193395.txt             0385335482.BINARY.txt      0553272535.txt.sorted.txt
+0060193395.txt.sorted.txt  0385335482.txt             0553375407.BINARY.txt
+0060392452.BINARY.txt      0385335482.txt.sorted.txt  0553375407.txt
+0060392452.txt             0385337116.BINARY.txt      0553375407.txt.sorted.txt
+0060392452.txt.sorted.txt  0385337116.txt             0553573403.BINARY.txt
+0060514558.BINARY.txt      0385337116.txt.sorted.txt  0553573403.txt
+0060514558.txt             0385484518.BINARY.txt      0553573403.txt.sorted.txt
+0060514558.txt.sorted.txt  0385484518.txt             0590353403.BINARY.txt
+0060582510.BINARY.txt      0385484518.txt.sorted.txt  0590353403.txt
+0060582510.txt             0385497466.BINARY.txt      0590353403.txt.sorted.txt
+0060582510.txt.sorted.txt  0385497466.txt             059035342X.BINARY.txt
+0060761288.BINARY.txt      0385497466.txt.sorted.txt  059035342X.txt
+0060761288.txt             038550120X.BINARY.txt      059035342X.txt.sorted.txt
+0060761288.txt.sorted.txt  038550120X.txt             0609610597.BINARY.txt
+0060763957.BINARY.txt      038550120X.txt.sorted.txt  0609610597.txt
+0060763957.txt             0385504209.BINARY.txt      0609610597.txt.sorted.txt
+0060763957.txt.sorted.txt  0385504209.txt             0671021001.BINARY.txt
+0060875410.BINARY.txt      0385504209.txt.sorted.txt  0671021001.txt
+0060875410.txt             0393317552.BINARY.txt      0671021001.txt.sorted.txt
+0060875410.txt.sorted.txt  0393317552.txt             0671025368.BINARY.txt
+0060928336.BINARY.txt      0393317552.txt.sorted.txt  0671025368.txt
+0060928336.txt             0399142789.BINARY.txt      0671025368.txt.sorted.txt
+0060928336.txt.sorted.txt  0399142789.txt             0671027344.BINARY.txt
+0060930535.BINARY.txt      0399142789.txt.sorted.txt  0671027344.txt
+0060930535.txt             0399144463.BINARY.txt      0671027344.txt.sorted.txt
+0060930535.txt.sorted.txt  0399144463.txt             0671027360.BINARY.txt
+0060938455.BINARY.txt      0399144463.txt.sorted.txt  0671027360.txt
+0060938455.txt             039914563X.BINARY.txt      0671027360.txt.sorted.txt
+0060938455.txt.sorted.txt  039914563X.txt             0671524313.BINARY.txt
+0060987103.BINARY.txt      039914563X.txt.sorted.txt  0671524313.txt
+0060987103.txt             039915079X.BINARY.txt      0671524313.txt.sorted.txt
+0060987103.txt.sorted.txt  039915079X.txt             0679444815.BINARY.txt
+0062502182.BINARY.txt      039915079X.txt.sorted.txt  0679444815.txt
+0062502182.txt             0399150897.BINARY.txt      0679444815.txt.sorted.txt
+0062502182.txt.sorted.txt  0399150897.txt             0679735771.BINARY.txt
+0066214130.BINARY.txt      0399150897.txt.sorted.txt  0679735771.txt
+0066214130.txt             0399501487.BINARY.txt      0679735771.txt.sorted.txt
+0066214130.txt.sorted.txt  0399501487.txt             0679781587.BINARY.txt
+0140177396.BINARY.txt      0399501487.txt.sorted.txt  0679781587.txt
+0140177396.txt             0425198243.BINARY.txt      0679781587.txt.sorted.txt
+0140177396.txt.sorted.txt  0425198243.txt             0684801523.BINARY.txt
+014028009X.BINARY.txt      0425198243.txt.sorted.txt  0684801523.txt
+014028009X.txt             0439064864.BINARY.txt      0684801523.txt.sorted.txt
+014028009X.txt.sorted.txt  0439064864.txt             068484267X.BINARY.txt
+014131088X.BINARY.txt      0439064864.txt.sorted.txt  068484267X.txt
+014131088X.txt             0439136350.BINARY.txt      068484267X.txt.sorted.txt
+014131088X.txt.sorted.txt  0439136350.txt             0689817851.BINARY.txt
+0142001740.BINARY.txt      0439136350.txt.sorted.txt  0689817851.txt
+0142001740.txt             0439139597.BINARY.txt      0689817851.txt.sorted.txt
+0142001740.txt.sorted.txt  0439139597.txt             0743222245.BINARY.txt
+0156027321.BINARY.txt      0439139597.txt.sorted.txt  0743222245.txt
+0156027321.txt             043935806X.BINARY.txt      0743222245.txt.sorted.txt
+0156027321.txt.sorted.txt  043935806X.txt             0785263535.BINARY.txt
+0310205719.BINARY.txt      043935806X.txt.sorted.txt  0785263535.txt
+0310205719.txt             0439784549.BINARY.txt      0785263535.txt.sorted.txt
+0310205719.txt.sorted.txt  0439784549.txt             0786868716.BINARY.txt
+0312195516.BINARY.txt      0439784549.txt.sorted.txt  0786868716.txt
+0312195516.txt             0440212561.BINARY.txt      0786868716.txt.sorted.txt
+0312195516.txt.sorted.txt  0440212561.txt             0812511816.BINARY.txt
+0312278586.BINARY.txt      0440212561.txt.sorted.txt  0812511816.txt
+0312278586.txt             0440219078.BINARY.txt      0812511816.txt.sorted.txt
+0312278586.txt.sorted.txt  0440219078.txt             0812548051.BINARY.txt
+0312857691.BINARY.txt      0440219078.txt.sorted.txt  0812548051.txt
+0312857691.txt             0440414806.BINARY.txt      0812548051.txt.sorted.txt
+0312857691.txt.sorted.txt  0440414806.txt             0812550706.BINARY.txt
+0312864256.BINARY.txt      0440414806.txt.sorted.txt  0812550706.txt
+0312864256.txt             0446310786.BINARY.txt      0812550706.txt.sorted.txt
+0312864256.txt.sorted.txt  0446310786.txt             0842329129.BINARY.txt
+0312864590.BINARY.txt      0446310786.txt.sorted.txt  0842329129.txt
+0312864590.txt             044652252X.BINARY.txt      0842329129.txt.sorted.txt
+0312864590.txt.sorted.txt  044652252X.txt             0895260174.BINARY.txt
+0316011770.BINARY.txt      044652252X.txt.sorted.txt  0895260174.txt
+0316011770.txt             0446532231.BINARY.txt      0895260174.txt.sorted.txt
+0316011770.txt.sorted.txt  0446532231.txt             0895261901.BINARY.txt
+0316601950.BINARY.txt      0446532231.txt.sorted.txt  0895261901.txt
+0316601950.txt             0446608955.BINARY.txt      0895261901.txt.sorted.txt
+0316601950.txt.sorted.txt  0446608955.txt             0971453209.BINARY.txt
+0316666343.BINARY.txt      0446608955.txt.sorted.txt  0971453209.txt
+0316666343.txt             0446672211.BINARY.txt      0971453209.txt.sorted.txt
+0316666343.txt.sorted.txt  0446672211.txt             0975599518.BINARY.txt
+0316769487.BINARY.txt      0446672211.txt.sorted.txt  0975599518.txt
+0316769487.txt             0446677450.BINARY.txt      0975599518.txt.sorted.txt
+0316769487.txt.sorted.txt  0446677450.txt             1400046610.BINARY.txt
+0345340426.BINARY.txt      0446677450.txt.sorted.txt  1400046610.txt
+0345340426.txt             0449004023.BINARY.txt      1400046610.txt.sorted.txt
+0345340426.txt.sorted.txt  0449004023.txt             1400050308.BINARY.txt
+0345342968.BINARY.txt      0449004023.txt.sorted.txt  1400050308.txt
+0345342968.txt             0451191145.BINARY.txt      1400050308.txt.sorted.txt
+0345342968.txt.sorted.txt  0451191145.txt             1558743669.BINARY.txt
+0345417623.BINARY.txt      0451191145.txt.sorted.txt  1558743669.txt
+0345417623.txt             0451524934.BINARY.txt      1558743669.txt.sorted.txt
+0345417623.txt.sorted.txt  0451524934.txt             1576734587.BINARY.txt
+0374332657.BINARY.txt      0451524934.txt.sorted.txt  1576734587.txt
+0374332657.txt             0451526341.BINARY.txt      1576734587.txt.sorted.txt
+0374332657.txt.sorted.txt  0451526341.txt             1594480001.BINARY.txt
+0375826688.BINARY.txt      0451526341.txt.sorted.txt  1594480001.txt
+0375826688.txt             0525947647.BINARY.txt      1594480001.txt.sorted.txt
+0375826688.txt.sorted.txt  0525947647.txt             medians.txt
+038529929X.BINARY.txt      0525947647.txt.sorted.txt
+038529929X.txt             0553272535.BINARY.txt
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ head 0553272535.BINARY.txt
+1 1 43 0.000
+2 1 11 0.000
+2 1 12 0.000
+2 1 12 0.000
+2 1 14 0.000
+2 1 34 0.000
+2 1 5 0.000
+2 1 5 0.000
+2 1 6 0.000
+2 1 6 0.000
+
+
+4. Recompute the correlation scores between rating stars and helpfulness, as you did in a2. 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ for f in *.BINARY.txt; do corr=`~/datamash-1.3/datamash -W ppearson 1:2 < $f`; id=$(echo $f | cut -d '.' -f1); echo "$id $corr" >>corr_products_BINARY; done
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ head corr_products_BINARY 
+0060193395 0.39008051975678
+0060392452 0.24084062321792
+0060514558 0.20424809493931
+0060582510 0.56485254979018
+0060761288 0.24717907194123
+0060763957 0.74303694227162
+0060875410 0.88627167310378
+0060928336 nan
+0060930535 0.2737728280058
+0060938455 0.19868077720406
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ cd ../CUSTOMERS/
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ for f in *.BINARY.txt; do corr=`~/datamash-1.3/datamash -W ppearson 1:2 < $f`; id=$(echo $f | cut -d '.' -f1); echo "$id $corr" >>corr_customers_BINARY; done
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ head corr_customers_BINARY 
+20595117 0.24264254416404
+30559999 0.27059261855156
+35004134 0.24076476952419
+35985708 0.10696194423732
+36642996 0.090209739707525
+38491967 -0.014552451092149
+38672733 0.26180765969659
+39134375 0.17313826410989
+39569598 -0.011566769431676
+41012519 0.31594413147555
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ sort corr_customers_BINARY | head
+20595117 0.24264254416404
+30559999 0.27059261855156
+35004134 0.24076476952419
+35985708 0.10696194423732
+36642996 0.090209739707525
+38491967 -0.014552451092149
+38672733 0.26180765969659
+39134375 0.17313826410989
+39569598 -0.011566769431676
+41012519 0.31594413147555
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ sort corr_customers_BINARY | head
+
+53071109 0.57689851289561
+51065232 0.52308126332041
+52173832 0.51917603969455
+52254603 0.44273868279524
+52706646 0.39044971527043
+52697458 0.37755364426542
+51145127 0.37586943791607
+50068216 0.33528142361928
+52223435 0.33404843645335
+49786731 0.32420858949127
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ sort 53071109.BINARY.txt > 53071109.BINARY.txt.sorted
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ head 53071109.BINARY.txt.sorted 
+1 0 10 0.300
+1 0 10 0.400
+1 0 101 0.248
+1 0 103 0.291
+1 0 105 0.114
+1 0 111 0.333
+1 0 113 0.212
+1 0 113 0.221
+1 0 115 0.252
+1 0 118 0.034
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ awk '{print NR, $1}' 53071109.BINARY.txt.sorted > 53071109.BINARY.txt.ratings
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ awk '{print NR, $2}' 53071109.BINARY.txt.sorted > 53071109.BINARY.txt.helpfulness
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ 
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ head 53071109.BINARY.txt.ratings 53071109.BINARY.txt.helpfulness 
+==> 53071109.BINARY.txt.ratings <==
+1 1
+2 1
+3 1
+4 1
+5 1
+6 1
+7 1
+8 1
+9 1
+10 1
+
+==> 53071109.BINARY.txt.helpfulness <==
+1 0
+2 0
+3 0
+4 0
+5 0
+6 0
+7 0
+8 0
+9 0
+10 0
+yehia@f6linuxA9:~/assignment3/CUSTOMERS$ cd ../PRODUCTS/
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ sort -nr -k2 corr_products_BINARY | head
+0060875410 0.88627167310378
+0060763957 0.74303694227162
+0895260174 0.66760818665021
+0066214130 0.65060307273362
+0525947647 0.61097378252701
+0446532231 0.58517535239809
+0060582510 0.56485254979018
+0895261901 0.51120722369083
+0785263535 0.48508738635457
+1400046610 0.43712455532623
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ ^C
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ sort 0060875410.BINARY.txt > 0060875410.BINARY.txt.sorted
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ awk '{print(NR,$1)}' 0060875410.BINARY.txt.sorted > 0060875410.BINARY.txt.ratings
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ awk '{print(NR,$2)}' 0060875410.BINARY.txt.sorted > 0060875410.BINARY.txt.helpfulness
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ 
+yehia@f6linuxA9:~/assignment3/PRODUCTS$ head 0060875410.BINARY.txt.ratings 0060875410.BINARY.txt.helpfulness 
+==> 0060875410.BINARY.txt.ratings <==
+1 1
+2 1
+3 1
+4 1
+5 1
+6 1
+7 1
+8 1
+9 1
+10 1
+
+==> 0060875410.BINARY.txt.helpfulness <==
+1 0
+2 0
+3 0
+4 0
+5 0
+6 0
+7 0
+8 0
+9 0
+10 0
+
+5. Plot the review rating stars and helpfulness scores for the top customer (the customer with thehighest correlation score) in a line plot.
+6. Plot the review rating stars and helpfulness scores for the top product (the product with the highestcorrelation score) in another line plot.
+yehia@f6linuxA9:~/gnuplot-5.4.2/src$ export GNUPLOT_DRIVER_DIR=~/gnuplot-5.4.2/src
+yehia@f6linuxA9:~/gnuplot-5.4.2/src$ ./gnuplot
+
+	G N U P L O T
+	Version 5.4 patchlevel 2    last modified 2021-06-01 
+
+	Copyright (C) 1986-1993, 1998, 2004, 2007-2021
+	Thomas Williams, Colin Kelley and many others
+
+	gnuplot home:     http://www.gnuplot.info
+	faq, bugs, etc:   type "help FAQ"
+	immediate help:   type "help"  (plot window: hit 'h')
+
+Terminal type is now 'x11'
+gnuplot> exitplot '/home/yehia/assignment3/CUSTOMERS/53071109.BINARY.txt.helpfulness' with linespoints linestyle 1 linecolor 7 title "helpfulness", '/home/yehia/assignment3/CUSTOMERS/53071109.BINARY.txt.ratings' with linespoints linestyle 1 linecolor 6 title "ratings"
+gnuplot> 
+gnuplot> plot '/home/yehia/assignment3/PRODUCTS/0060875410.BINARY.txt.helpfulness' with linespoints linestyle 1 linecolor 7 title "helpfulness", '/home/yehia/assignment3/PRODUCTS/0060875410.BINARY.txt.ratings' with linespoints linestyle 1 linecolor 6 title "ratings"
+gnuplot> exit
+
+7. Do you think the correlation scores are more meaningful now than before in a2?
+Weighing each helpfulness score by dividing it by the total votes provided a more meaningful correlation. Both correlations of the top customer and top product gave a similar distribution, whereby low ratings had helpfulness scores below the mean helpfulness (binary =0), whereas higher ratings (5) tend to have helpfulness votes higher than the mean helpfulness (binary =1).
+
+8. First put in a file the review_body and helpfulness scores for one product (you want to use a product file that has plenty of reviews, suchthat you have enough data to work with):
+yehia@f6linuxA9:~/gnuplot-5.4.2/src$ cd ~/assignment3
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ awk -F "\t" '/043935806X/ {print($9,$14)}' ../amazon_reviews_us_Books_v1_02.tsv > 043935806X.txt
+
+9. Remove the stop words and html tags from the review_body. Then also remove all small 1-2character words (any words with one character or two characters) from the review body:
+yehia@f6linuxA9:~/assignment3$ vi sedfile
+s/,//g
+s/\./ /g
+s/\;//g
+s/\band\b//gi
+s/<[a-zA-z]\+ \/>//gi
+s/\b[a-zA-z][a-zA-z]\b//gi
+s/\b[a-zA-z]\b//gi
+
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ head -n1 043935806X.txt 
+0 the fifth of seven of the most magical amazing fun captivating series Harry Potter.The Order of the Phoenix is the darkest book of the series other than the Half Blood Princee.In Order of the Phoenix Harry is left in the dark about what the evil wizard voldemort is up to.Harry can't get any info from his friends Hermione Granger and Ron Weasley or from his godfather even Dumbledore seems to be ignoring Harry and stuff only gets worse for Harry before it gets better a dementor attack on private drive,people thinking he's crazy at Hogwarts,a defense against the dark arts teacher who is the meanest of them all,Voldemorts thoughts and actions creeping in Harry's mind thats  all i'm going to tell you go now and buy all the Harry Potter books and become a big huge Harry Potter fan like me and read the books and see why i get lost in the magical world of Harry Potter over and over again.
+yehia@f6linuxA9:~/assignment3$ sed -i -f sedfile 043935806X.txt
+yehia@f6linuxA9:~/assignment3$ head -n1 043935806X.txt 
+0 the fifth  seven  the most magical amazing fun captivating series Harry Potter The Order  the Phoenix  the darkest book  the series other than the Half Blood Princee  Order  the Phoenix Harry  left  the dark about what the evil wizard voldemort    Harry can' get any info from his friends Hermione Granger  Ron Weasley  from his godfather even Dumbledore seems   ignoring Harry  stuff only gets worse for Harry before  gets better  dementor attack  private drivepeople thinking ' crazy  Hogwartsa defense against the dark arts teacher who  the meanest  them allVoldemorts thoughts  actions creeping  Harry' mind thats  all ' going  tell you  now  buy all the Harry Potter books  become  big huge Harry Potter fan like   read the books  see why  get lost  the magical world  Harry Potter over  over again 
+
+10. Which 10 words appear most frequently in the helpfulness=1 category? Which 10 words appearmost frequently in the helpfulness=0 category?
+yehia@f6linuxA9:~/assignment3$ cat 043935806X.txt | awk '$1=="1" {for(i=1;i<=NF;++i){D[$i]++}}END{for(k in D)print k, D[k]}' | sort -k2nr | head -n 10
+the 6353
+book 1951
+that 1556
+Harry 1378
+this 1211
+was 1144
+for 917
+with 854
+but 701
+not 666
+yehia@f6linuxA9:~/assignment3$ 
+yehia@f6linuxA9:~/assignment3$ cat 043935806X.txt | awk '$1=="0" {for(i=1;i<=NF;++i){D[$i]++}}END{for(k in D)print k, D[k]}' | sort -k2nr | head -n 10
+the 28110
+book 8876
+that 6481
+Harry 5859
+this 5503
+was 4481
+for 3987
+with 3515
+0 3079
+but 2922
+yehia@f6linuxA9:~/assignment3$ exit
+
+Script done on 2021-10-21 23:55:01+00:00 [COMMAND_EXIT_CODE="0"]
